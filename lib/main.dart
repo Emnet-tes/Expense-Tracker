@@ -1,33 +1,58 @@
+import 'package:flutter/material.dart';
 import 'package:expense_tracker/pages/Home_page.dart';
 import 'package:expense_tracker/pages/add_page.dart';
 import 'package:expense_tracker/pages/settings_page.dart';
 import 'package:expense_tracker/pages/transaction_page.dart';
-import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isDarkMode = false;
+
+  // Toggle dark mode
+  void _toggleDarkMode(bool value) {
+    setState(() {
+      _isDarkMode = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Expense Tracker',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+      theme: _isDarkMode
+          ? ThemeData.dark().copyWith(
+              appBarTheme: const AppBarTheme(backgroundColor: Colors.blueGrey),
+              scaffoldBackgroundColor: Colors.blueGrey[900],
+            )
+          : ThemeData.light().copyWith(
+              appBarTheme: const AppBarTheme(backgroundColor: Colors.blueGrey),
+              scaffoldBackgroundColor: Colors.blueGrey[50],
+            ),
+      home: MyHomePage(
+        title: 'Expense Tracker',
+        onThemeChanged: _toggleDarkMode, // Pass theme change callback
       ),
-      home: const MyHomePage(title: 'Expense Tracker'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
   final String title;
+  final ValueChanged<bool> onThemeChanged; // Callback for theme change
+
+  const MyHomePage(
+      {super.key, required this.title, required this.onThemeChanged});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -40,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const HomePage(),
     const AddPage(),
     const TransactionPage(),
-    const SettingsPage()
+    SettingsPage(),
   ];
 
   @override
@@ -81,8 +106,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: IndexedStack(
         index: _currentIndex,
-        children: _pages
-      )
+        children: _pages,
+      ),
     );
   }
 }
